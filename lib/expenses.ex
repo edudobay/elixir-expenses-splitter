@@ -32,10 +32,9 @@ defmodule Expenses do
     split_equally: members
   }) do
 
-    split_value = round(value / length(members))
+    amounts = Money.split(value, length(members))
 
-    split_amounts = members
-      |> Enum.map(fn member -> {member, split_value} end)
+    split_amounts = Enum.zip(members, amounts)
       |> Map.new()
 
     split_expense(%{value: value, paid_by: payer, split_amounts: split_amounts})

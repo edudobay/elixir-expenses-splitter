@@ -23,6 +23,29 @@ defmodule ExpensesTest do
     ])
   end
 
+  test "split an odd number of cents between two people: extra cents belong to share of first person mentioned" do
+    assert Expenses.split_expense(%{
+      value: 43,
+      paid_by: :alice,
+      split_equally: [:alice, :bob]
+    }) == MapSet.new([
+      %{ value: 21, owes: :bob, owes_to: :alice },
+    ])
+  end
+
+  test "split an odd number of cents between five people: extra cents belong to the shares of earlier mentioned people" do
+    assert Expenses.split_expense(%{
+      value: 43,
+      paid_by: :alice,
+      split_equally: [:alice, :bob, :charlotte, :daniel, :evelyn]
+    }) == MapSet.new([
+      %{ value: 9, owes: :bob, owes_to: :alice },
+      %{ value: 9, owes: :charlotte, owes_to: :alice },
+      %{ value: 8, owes: :daniel, owes_to: :alice },
+      %{ value: 8, owes: :evelyn, owes_to: :alice },
+    ])
+  end
+
   test "split an expense giving exact shares" do
     assert Expenses.split_expense(%{
       value: 42,
